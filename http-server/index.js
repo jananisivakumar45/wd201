@@ -1,9 +1,21 @@
 const http = require("http");
 const fs = require("fs");
+const readline = require("readline");
+let portNo;
 
 let homeContent = "";
 let projectContent = "";
 
+const lineDetail = readline.createInterface({
+  input:process.stdin,
+  output:process.stdout
+})
+lineDetail.question(`Enter port number: `, (port) => {
+  portNo = port;
+  //console.log(`port no : ${port}`);
+  lineDetail.close();
+
+  
 fs.readFile("home.html", (err, home) => {
   if (err) {
     throw err;
@@ -18,7 +30,14 @@ fs.readFile("project.html", (err, project) => {
   projectContent = project;
 });
 
-http
+fs.readFile("registration.html", (err, registration) => {
+  if (err) {
+    throw err;
+  }
+  registrationContent = registration;
+});
+
+  http
   .createServer((request, response) => {
     let url = request.url;
     response.writeHeader(200, { "Content-Type": "text/html" });
@@ -28,7 +47,8 @@ http
         response.end();
         break;
       case "/registration":
-        /////////////////////////
+        response.write(registrationContent);
+        response.end();
         break;
       default:
         response.write(homeContent);
@@ -36,4 +56,6 @@ http
         break;
     }
   })
-  .listen(3000);
+  .listen(portNo);
+})
+
